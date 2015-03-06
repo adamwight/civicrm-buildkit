@@ -4,7 +4,7 @@
 
 ###############################################################################
 
-[ -z "$CMS_VERSION" ] && CMS_VERSION=3.7
+[ -z "$CMS_VERSION" ] && CMS_VERSION=4.1
 
 echo "[[Download WordPress]]"
 mkdir "$WEB_ROOT"
@@ -22,6 +22,7 @@ pushd $WEB_ROOT/wp-content/plugins >> /dev/null
   git clone ${CACHE_DIR}/civicrm/civicrm-wordpress.git -b "$CIVI_VERSION" civicrm
   git clone ${CACHE_DIR}/civicrm/civicrm-core.git      -b "$CIVI_VERSION" civicrm/civicrm
   git clone ${CACHE_DIR}/civicrm/civicrm-packages.git  -b "$CIVI_VERSION" civicrm/civicrm/packages
+  git clone ${CACHE_DIR}/civicrm/civicrm-demo-wp.git   -b master          civicrm-demo-wp
 
   git_set_hooks civicrm-wordpress   civicrm                    "../civicrm/tools/scripts/git"
   git_set_hooks civicrm-core        civicrm/civicrm            "../tools/scripts/git"

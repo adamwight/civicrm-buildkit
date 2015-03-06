@@ -1,7 +1,6 @@
-# civicrm-buildkit (experimental)
+# civicrm-buildkit
 
-civicrm-buildkit is a collection of tools and scripts for preparing a useful
-CiviCRM development environment.
+A collection of tools and scripts for creating one or more CiviCRM development/demo/testing environments.
 
 ## Requirements
 
@@ -9,6 +8,7 @@ CiviCRM development environment.
  * Git/SVN
  * PHP
  * MySQL (client/server)
+ * NodeJS (for development with CiviCRM v4.6+)
  * Recommended: Apache (TODO: nginx)
  * Recommended: Ruby/Rake
 
@@ -22,7 +22,7 @@ cd civicrm-buildkit/bin
 ## At this point, check to make sure you follow the instructions output by amp config,
 ## which involve adding a line to your Apache configuration file
 ./amp test
-./civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
+./civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001
 ## FIXME: ./civibuild launch drupal-demo
 ```
 
@@ -34,15 +34,31 @@ website.
 civicrm-buildkit includes several utilities which are useful in developing
 CiviCRM:
 
- * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
- * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
- * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades
- * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
- * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
- * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
- * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
- * [drush](http://drush.ws/) - CLI administration tool for Drupal
- * [wp](http://wp-cli.org/) - CLI administration tool for WordPress
+ * CiviCRM
+   * [civix](https://github.com/totten/civix) - Code-generator for CiviCRM extensions
+   * [civistrings](https://github.com/civicrm/civistrings) - String extractor
+ * Dependency management
+   * [composer](http://getcomposer.org/) - Dependency manager for PHP packages
+   * [bower](http://bower.io/) - Dependency manager for frontend Javascript packages
+ * Source code management
+   * [git-scan](https://github.com/totten/git-scan/) - Git extension for working with many git repositories
+   * [hub](http://hub.github.com/) - Git extension for easily working with GitHub (Note: Requires Ruby/Rake)
+ * Source code quality
+   * **civilint** - Wrapper script which calls all syntax checks (phpcs, jshint, etc) on uncommitted files.
+   * [jshint](http://jshint.com/) - Javascript syntax checker
+   * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) - PHP syntax checker
+   * [coder 2.x (Civi)](https://github.com/civicrm/coder) - phpcs configuration derived from [coder 2.x](https://www.drupal.org/project/coder). (The [Civi coding standard](http://wiki.civicrm.org/confluence/display/CRMDOC/PHP+Code+and+Inline+Documentation) derives from the [Drupal coding standard](https://www.drupal.org/coding-standards) with variations for class/function/variable naming.)
+ * Site management
+   * [amp](https://github.com/totten/amp) - Abstracted interface for local httpd/sql service (Apache/nginx/MySQL)
+   * **civibuild** - CLI tool which builds a complete source tree (with CMS+Civi+addons), provisions httpd/sql, etc.
+   * [drush](http://drush.ws/) - CLI administration tool for Drupal
+   * [joomla](https://github.com/joomlatools/joomla-console) (joomla-console) - CLI administration for Joomla
+   * [wp](http://wp-cli.org/) (wp-cli) - CLI administration tool for WordPress
+ * Testing
+   * [civicrm-upgrade-test](https://github.com/civicrm/civicrm-upgrade-test) - Scripts and data files for testing upgrades
+   * [karma](http://karma-runner.github.io) (w/[jasmine](http://jasmine.github.io/)) - Unit testing for Javascript (Note: Requires NodeJS)
+   * [paratest](https://github.com/brianium/paratest) - Parallelized version of PHPUnit
+   * [phpunit](http://phpunit.de/) - Unit testing for PHP (with Selenium and DB add-ons)
 
 It will be handy to add these to your PATH:
 
@@ -64,7 +80,12 @@ For example, at time of writing, it includes:
  * *drupal-clean*: A bare, "out-of-the-box" installation of Drupal+CiviCRM
  * *drupal-demo*: A demo site running Drupal and CiviCRM
  * *wp-demo*: A demo site running WordPress and CiviCRM
+ * *hrdemo* A demo site running Drupal, CiviCRM, and CiviHR
  * *symfony*: An experimental hybrid site running Drupal 7, Symfony 2, and CiviCRM
+ * *extdir*: A mock website akin to civicrm.org/extdir/ . Useful testing the extension download process.
+ * *dist*: A website containing nightly builds akin to dist.civicrm.org. Useful for preparing CiviCRM tarballs.
+ * *l10n*: WIP - A build environment for creating translation files.
+ * *joomla-demo*: WIP/incomplete/broken
 
 For a list of available build-types as well as documentation on writing build scripts,
 see [app/config](app/config).
@@ -118,38 +139,38 @@ There are four variations on rebuilding. In order of fastest (least thorough) to
   </tr>
 </table>
 
-## Daily Coding: Your First Patch
+## Daily Coding: Your First Pull-Request
 
 (TODO: Write a real tutorial!)
 
 Suppose we've just downloaded buildkit and want to prepare a patch for
-CiviCRM 4.4.  This requires downloading and installing the bleeding edge
-(4.4.x) code for CiviCRM+CMS as well as writing and publishing the patch.
+CiviCRM 4.5.  This requires downloading and installing the bleeding edge
+(4.5.x) code for CiviCRM+CMS as well as writing and publishing the patch.
 
 ```bash
-## Download Drupal 7.x and CiviCRM 4.4.x
-civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.4 --url http://localhost:8001
+## Download Drupal 7.x and CiviCRM 4.5.x
+civicrm-buildkit$ civibuild create drupal-demo --civi-ver 4.5 --url http://localhost:8001
 
 ## Create a "fork" of civicrm-core on github.com for publishing changes
 civicrm-buildkit$ cd build/drupal-demo/sites/all/modules/civicrm
 civicrm$ hub fork
 
 ## Create some changes locally
-civicrm$ git checkout origin/4.4 -b 4.4-mypatch
+civicrm$ git checkout origin/4.5 -b 4.5-mypatch
 civicrm$ vi CRM/Utils/Array.php
 civicrm$ git commit CRM/Utils/Array.php
 
 ## Publish our changes on github.com
-civicrm$ git push mygithubuser 4.4-mypatch
-civicrm$ hub pull-request -b 4.4
+civicrm$ git push mygithubuser 4.5-mypatch
+civicrm$ hub pull-request -b 4.5
 ```
 
 Please note: A build may include several different git repositories. The
 commands should look about the same on any repository, although different
 git repositories may use different names for their versions/branches (eg the
 civicrm-core, civicrm-joomla, and civicrm-wordpress repositories have
-branches named "4.4", but the civicrm-drupal repository has a branch named
-"7.x-4.4").
+branches named "4.5", but the civicrm-drupal repository has a branch named
+"7.x-4.5").
 
 
 ## Daily Coding: Housekeeping
@@ -291,7 +312,7 @@ extra sites,  use the notation "civibuild create buildname/site-id" as in:
 
 ```bash
 ## Create the original build
-civibuild create training --type drupal-demo --civi-ver 4.4 --url http://demo00.example.org --admin-pass s3cr3t
+civibuild create training --type drupal-demo --civi-ver 4.5 --url http://demo00.example.org --admin-pass s3cr3t
 
 ## Create additional sites (01 - 03)
 civibuild create training/01 --url http://demo01.example.org --admin-pass s3cr3t
